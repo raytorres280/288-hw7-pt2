@@ -15,7 +15,7 @@ def update(cursor, row, currentId):
 	query = 'UPDATE stocks SET volume=%s, price=%s, stocks.change=%s WHERE id=%s;'
 	cursor.execute(query, (row['volume'], row['price'], row['change'], currentId))
 
-#check if it exists
+# #check if it exists
 def select(cursor, row):
 	symbol = row['symbol']
 	query = 'select * from stocks where symbol=%s'
@@ -26,25 +26,9 @@ def hitDB(row):
 	try:
 		cnx = mysql.connector.connect(host='localhost', user='root', password='root', database='288-hw7', port=32769)
 		cursor = cnx.cursor()
+		insert(cursor, row)
+		cnx.commit()
 
-		#check if exists
-		select(cursor, row)
-
-		resultRow = cursor.fetchone()
-
-		if cursor.rowcount < 1:
-			#do the insert
-			print('new data, insert')
-			insert(cursor, row)
-			cnx.commit() 
-		else:
-			#do the update
-			print('existing top 100, update')
-			# resultRow = cursor.fetchone()
-			update(cursor, row, resultRow[0])
-			cnx.commit()
-
-		cursor.close()
 	except mysql.connector.Error as err:
 		print(err)
 	finally:
